@@ -1,27 +1,12 @@
-import React from 'react';
 import { Button } from 'antd';
+import { NodeIndexOutlined } from '@ant-design/icons';
+import Header from '../components/Header';
 import './HomePage.css';
 
 const HomePage = () => {
   return (
     <div className="page">
-      <nav className="nav">
-        <div className="nav-container">
-          <div className="nav-logo">
-            <img src="/favicon.svg" alt="Logo" />
-            <span>AgriChain</span>
-          </div>
-          <div className="nav-menu">
-            <a href="#features" className="nav-link">Tính năng</a>
-            <a href="#about" className="nav-link">Giới thiệu</a>
-            <a href="#contact" className="nav-link">Liên hệ</a>
-          </div>
-          <div className="nav-buttons">
-            <button className="btn-login">Đăng nhập</button>
-            <button className="btn-signup">Đăng ký</button>
-          </div>
-        </div>
-      </nav>
+      <Header />
 
       <section className="hero">
         <div className="wrap">
@@ -31,20 +16,6 @@ const HomePage = () => {
             <div className="btns">
               <Button type="primary" size="large">Dùng thử miễn phí</Button>
               <Button size="large">Xem demo</Button>
-            </div>
-            <div className="stats">
-              <div className="stat">
-                <span className="num">999+</span>
-                <span className="label">Nông dân</span>
-              </div>
-              <div className="stat">
-                <span className="num">999+</span>
-                <span className="label">Đại lý</span>
-              </div>
-              <div className="stat">
-                <span className="num">99K+</span>
-                <span className="label">Sản phẩm</span>
-              </div>
             </div>
           </div>
           <div className="visual">
@@ -187,7 +158,7 @@ const HomePage = () => {
         <div className="wrap">
           <div className="top">
             <div className="brand">
-              <img src="/favicon.svg" alt="Logo" />
+              <NodeIndexOutlined style={{ fontSize: '20px', color: '#52c41a' }} />
               <span>AgriChain</span>
             </div>
             <div className="links">
