@@ -19,7 +19,7 @@ const HomePage = () => {
             </div>
           </div>
           <div className="visual">
-            <img src="/favicon.svg" alt="Platform" className="main-img" />
+            <img src="/fruits_and_vegetables.jpg" alt="Trái cây và rau củ tươi sạch" className="main-img" />
           </div>
         </div>
       </section>
@@ -30,7 +30,7 @@ const HomePage = () => {
           <div className="process">
             <div className="step">
               <div className="step-img">
-                <img src="/favicon.svg" alt="Trang trại" />
+                <img src="https://images.unsplash.com/photo-1500937386664-56d1dfef3854?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Trang trại" />
               </div>
               <div className="step-content">
                 <h3>1. Trang trại</h3>
@@ -44,13 +44,13 @@ const HomePage = () => {
                 <p>Sản phẩm được kiểm tra chất lượng tại các trạm kiểm định. Kết quả được ghi nhận và cập nhật vào hệ thống để đảm bảo an toàn thực phẩm.</p>
               </div>
               <div className="step-img">
-                <img src="/favicon.svg" alt="Kiểm định" />
+                <img src="https://images.unsplash.com/photo-1582719471384-894fbb16e074?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Kiểm định" />
               </div>
             </div>
 
             <div className="step">
               <div className="step-img">
-                <img src="/favicon.svg" alt="Vận chuyển" />
+                <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Vận chuyển" />
               </div>
               <div className="step-content">
                 <h3>3. Vận chuyển & Phân phối</h3>
@@ -64,7 +64,7 @@ const HomePage = () => {
                 <p>Người mua có thể quét mã QR để xem toàn bộ hành trình của sản phẩm từ trang trại đến tay họ, đảm bảo minh bạch và tin cậy.</p>
               </div>
               <div className="step-img">
-                <img src="/favicon.svg" alt="Người tiêu dùng" />
+                <img src="https://images.unsplash.com/photo-1556909114-f6e7ad7d3136?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80" alt="Người tiêu dùng" />
               </div>
             </div>
           </div>

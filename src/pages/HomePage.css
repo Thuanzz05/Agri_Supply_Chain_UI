@@ -57,12 +57,12 @@ body {
 }
 
 .main-img {
-  width: 300px;
+  width: 100%;
+  max-width: 400px;
   height: 300px;
   border-radius: 12px;
-  background: #fff;
-  padding: 60px;
-  border: 1px solid #eee;
+  object-fit: cover;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
 }
 
 /* Showcase Section */
@@ -105,12 +105,12 @@ body {
 }
 
 .step-img img {
-  width: 200px;
+  width: 100%;
+  max-width: 300px;
   height: 200px;
   border-radius: 12px;
-  background: #f8f9fa;
-  padding: 40px;
-  border: 1px solid #eee;
+  object-fit: cover;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
 }
 
 .step-content h3 {
