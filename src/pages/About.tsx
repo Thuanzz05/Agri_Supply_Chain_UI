@@ -27,6 +27,28 @@ const About = () => {
           </div>
         </div>
       </section>
+
+      <section className="mission-vision">
+        <div className="wrap">
+          <h2>Tầm nhìn & Sứ mệnh</h2>
+          <div className="mv-grid">
+            <div className="mv-card">
+              <div className="mv-icon">
+                <img src="/cam_bien_cho_nha_kinh.jpg" alt="Tầm nhìn" />
+              </div>
+              <h3>Tầm nhìn</h3>
+              <p>Trở thành nền tảng công nghệ hàng đầu Đông Nam Á trong việc số hóa và tối ưu hóa chuỗi cung ứng nông sản, góp phần xây dựng một hệ sinh thái nông nghiệp bền vững và minh bạch.</p>
+            </div>
+            <div className="mv-card">
+              <div className="mv-icon">
+                <img src="/dam_bao_chat_luong.jpg" alt="Sứ mệnh" />
+              </div>
+              <h3>Sứ mệnh</h3>
+              <p>Ứng dụng công nghệ tiên tiến để kết nối nông dân với thị trường, đảm bảo chất lượng sản phẩm và tạo ra giá trị bền vững cho toàn bộ chuỗi giá trị nông nghiệp Việt Nam.</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </div>
   );
 };
