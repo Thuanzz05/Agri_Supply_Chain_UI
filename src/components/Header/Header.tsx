@@ -18,7 +18,9 @@ const Header = () => {
           <a href="#contact" className="nav-link">Liên hệ</a>
         </div>
         <div className="nav-buttons">
-          <button className="btn-login">Đăng nhập</button>
+          <Link to="/login">
+            <button className="btn-login">Đăng nhập</button>
+          </Link>
           <button className="btn-signup">Đăng ký</button>
         </div>
       </div>

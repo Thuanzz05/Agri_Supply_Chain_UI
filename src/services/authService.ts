@@ -1,33 +1,76 @@
-import type { LoginForm, AuthResponse } from '../types/auth';
+import axios from 'axios';
 
-const API_BASE_URL = 'http://localhost:5204'; // Gateway URL
+const API_BASE_URL = 'https://localhost:7009';
+
+const api = axios.create({
+  baseURL: API_BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+api.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+
+export interface LoginRequest {
+  TenDangNhap: string;
+  MatKhau: string;
+}
+
+export interface User {
+  MaTaiKhoan: number;
+  TenDangNhap: string;
+  LoaiTaiKhoan: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  message: string;
+  data?: {
+    MaTaiKhoan: number;
+    TenDangNhap: string;
+    LoaiTaiKhoan: string;
+    Token: string;
+  };
+}
 
 export const authService = {
-  async login(loginData: LoginForm): Promise<AuthResponse> {
+  async login(loginData: LoginRequest): Promise<LoginResponse> {
     try {
-      const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(loginData),
-      });
-
-      const data = await response.json();
+      const response = await api.post<LoginResponse>('/api/auth/login', loginData);
       
-      if (response.ok) {
-        // Lưu token vào localStorage
-        if (data.token) {
-          localStorage.setItem('token', data.token);
-          localStorage.setItem('user', JSON.stringify(data.user));
-        }
-        return data;
-      } else {
-        throw new Error(data.message || 'Đăng nhập thất bại');
+      if (response.data.success && response.data.data) {
+        localStorage.setItem('token', response.data.data.Token);
+        localStorage.setItem('user', JSON.stringify({
+          MaTaiKhoan: response.data.data.MaTaiKhoan,
+          TenDangNhap: response.data.data.TenDangNhap,
+          LoaiTaiKhoan: response.data.data.LoaiTaiKhoan
+        }));
       }
+      
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.data) {
+        return error.response.data;
+      }
+      throw new Error('Lỗi kết nối đến server');
+    }
+  },
+
+  async getCurrentUser(): Promise<User | null> {
+    try {
+      const response = await api.get('/api/auth/me');
+      if (response.data.success) {
+        return response.data.data;
+      }
+      return null;
     } catch (error) {
-      console.error('Login error:', error);
-      throw error;
+      return null;
     }
   },
 
@@ -36,16 +79,16 @@ export const authService = {
     localStorage.removeItem('user');
   },
 
-  getCurrentUser() {
+  getStoredUser(): User | null {
     const userStr = localStorage.getItem('user');
     return userStr ? JSON.parse(userStr) : null;
   },
 
-  getToken() {
+  getToken(): string | null {
     return localStorage.getItem('token');
   },
 
-  isAuthenticated() {
+  isAuthenticated(): boolean {
     return !!this.getToken();
   }
 };

@@ -1,28 +1,38 @@
 import React from 'react';
-import { Form, Input, Button, Select, Card, Typography, message } from 'antd';
+import { Form, Input, Button, Card, Typography, message } from 'antd';
 import { UserOutlined, LockOutlined, LoginOutlined } from '@ant-design/icons';
-import type { LoginForm } from '../types/auth';
-import { authService } from '../services/authService';
+import { authService, type LoginRequest } from '../services/authService';
 import './Login.css';
 
 const { Title } = Typography;
-const { Option } = Select;
+
+interface LoginFormData {
+  tenDangNhap: string;
+  matKhau: string;
+}
 
 const Login: React.FC = () => {
   const [form] = Form.useForm();
   const [loading, setLoading] = React.useState(false);
 
-  const onFinish = async (values: LoginForm) => {
+  const onFinish = async (values: LoginFormData) => {
     setLoading(true);
     try {
-      const response = await authService.login(values);
+      const loginData: LoginRequest = {
+        TenDangNhap: values.tenDangNhap,
+        MatKhau: values.matKhau
+      };
+
+      const response = await authService.login(loginData);
+      
       if (response.success) {
         message.success('Đăng nhập thành công!');
-        // TODO: Redirect to dashboard based on user role
-        console.log('User logged in:', response.user);
+        window.location.href = '/dashboard';
+      } else {
+        message.error(response.message || 'Đăng nhập thất bại!');
       }
     } catch (error: any) {
-      message.error(error.message || 'Đăng nhập thất bại!');
+      message.error(error.message || 'Lỗi kết nối đến server');
     } finally {
       setLoading(false);
     }
@@ -61,18 +71,6 @@ const Login: React.FC = () => {
               prefix={<LockOutlined />}
               placeholder="Mật khẩu"
             />
-          </Form.Item>
-
-          <Form.Item
-            name="loaiTaiKhoan"
-            rules={[{ required: true, message: 'Vui lòng chọn loại tài khoản!' }]}
-          >
-            <Select placeholder="Chọn loại tài khoản">
-              <Option value="Admin">Quản trị viên</Option>
-              <Option value="NongDan">Nông dân</Option>
-              <Option value="DaiLy">Đại lý</Option>
-              <Option value="SieuThi">Siêu thị</Option>
-            </Select>
           </Form.Item>
 
           <Form.Item>
