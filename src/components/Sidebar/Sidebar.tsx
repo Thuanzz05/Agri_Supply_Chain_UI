@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
   DashboardOutlined,
@@ -7,16 +7,29 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   FileTextOutlined,
+  ShopOutlined,
+  ShoppingOutlined,
+  InboxOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
+import { authService } from '../../services/authService';
 
 type MenuItem = Required<MenuProps>['items'][number];
 
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const [userRole, setUserRole] = useState<string>('Admin');
   const navigate = useNavigate();
   const location = useLocation();
+
+  useEffect(() => {
+    // Lấy thông tin user từ localStorage
+    const user = authService.getStoredUser();
+    if (user && user.loaiTaiKhoan) {
+      setUserRole(user.loaiTaiKhoan);
+    }
+  }, []);
 
   const toggleCollapsed = () => {
     setCollapsed(!collapsed);
@@ -26,7 +39,8 @@ const Sidebar: React.FC = () => {
     }));
   };
 
-  const items: MenuItem[] = [
+  // Menu cho Admin
+  const adminItems: MenuItem[] = [
     { 
       key: '/admin/dashboard', 
       icon: <DashboardOutlined />, 
@@ -51,6 +65,100 @@ const Sidebar: React.FC = () => {
       label: 'Về trang chủ' 
     },
   ];
+
+  // Menu cho Nông dân
+  const farmerItems: MenuItem[] = [
+    { 
+      key: '/farmer/dashboard', 
+      icon: <DashboardOutlined />, 
+      label: 'Dashboard' 
+    },
+    { 
+      key: '/farmer/products', 
+      icon: <ShopOutlined />, 
+      label: 'Sản phẩm' 
+    },
+    { 
+      type: 'divider'
+    },
+    { 
+      key: '/', 
+      icon: <LogoutOutlined />, 
+      label: 'Về trang chủ' 
+    },
+  ];
+
+  // Menu cho Đại lý
+  const agentItems: MenuItem[] = [
+    { 
+      key: '/agent/dashboard', 
+      icon: <DashboardOutlined />, 
+      label: 'Dashboard' 
+    },
+    { 
+      key: '/agent/orders', 
+      icon: <InboxOutlined />, 
+      label: 'Đơn hàng' 
+    },
+    { 
+      type: 'divider'
+    },
+    { 
+      key: '/', 
+      icon: <LogoutOutlined />, 
+      label: 'Về trang chủ' 
+    },
+  ];
+
+  // Menu cho Siêu thị
+  const supermarketItems: MenuItem[] = [
+    { 
+      key: '/supermarket/dashboard', 
+      icon: <DashboardOutlined />, 
+      label: 'Dashboard' 
+    },
+    { 
+      key: '/supermarket/inventory', 
+      icon: <ShoppingOutlined />, 
+      label: 'Kho hàng' 
+    },
+    { 
+      type: 'divider'
+    },
+    { 
+      key: '/', 
+      icon: <LogoutOutlined />, 
+      label: 'Về trang chủ' 
+    },
+  ];
+
+  // Chọn menu items dựa trên role
+  const getMenuItems = () => {
+    switch (userRole) {
+      case 'Farmer':
+        return farmerItems;
+      case 'Agent':
+        return agentItems;
+      case 'Supermarket':
+        return supermarketItems;
+      default:
+        return adminItems;
+    }
+  };
+
+  // Lấy tên hiển thị dựa trên role
+  const getDisplayName = () => {
+    switch (userRole) {
+      case 'Farmer':
+        return 'Nông Dân';
+      case 'Agent':
+        return 'Đại Lý';
+      case 'Supermarket':
+        return 'Siêu Thị';
+      default:
+        return 'Admin';
+    }
+  };
 
   const handleMenuClick: MenuProps['onClick'] = (e) => {
     navigate(e.key);
@@ -80,7 +188,7 @@ const Sidebar: React.FC = () => {
             fontSize: '18px', 
             fontWeight: 700 
           }}>
-            AgriChain Admin
+            AgriChain {getDisplayName()}
           </div>
         )}
         <Button 
@@ -100,7 +208,7 @@ const Sidebar: React.FC = () => {
         mode="inline"
         theme="dark"
         inlineCollapsed={collapsed}
-        items={items}
+        items={getMenuItems()}
         onClick={handleMenuClick}
         style={{ 
           border: 'none',

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Form, Input, Button, Card, Typography, message } from 'antd';
-import { UserOutlined, LockOutlined, LoginOutlined } from '@ant-design/icons';
+import { Form, Input, Button, Card, Typography, message, Select } from 'antd';
+import { UserOutlined, LockOutlined, LoginOutlined, TeamOutlined } from '@ant-design/icons';
 import { authService, type LoginRequest } from '../services/authService';
 import './Login.css';
 
@@ -10,6 +10,7 @@ const { Title } = Typography;
 interface LoginFormData {
   tenDangNhap: string;
   matKhau: string;
+  loaiTaiKhoan: string;
 }
 
 const Login: React.FC = () => {
@@ -30,12 +31,37 @@ const Login: React.FC = () => {
       if (response.success && response.data) {
         message.success('Đăng nhập thành công!');
         
-        // Redirect based on user role - Admin goes to admin dashboard
-        if (response.data.loaiTaiKhoan === 'Admin') {
+        // Lưu loại tài khoản đã chọn vào localStorage
+        const selectedRole = values.loaiTaiKhoan;
+        const userData = {
+          maTaiKhoan: response.data.maTaiKhoan,
+          tenDangNhap: response.data.tenDangNhap,
+          loaiTaiKhoan: selectedRole // Sử dụng loại tài khoản đã chọn
+        };
+        localStorage.setItem('user', JSON.stringify(userData));
+        
+        // Redirect dựa trên loại tài khoản được chọn
+        if (selectedRole === 'Admin') {
           navigate('/admin/dashboard');
+        } else if (selectedRole === 'Farmer') {
+          navigate('/farmer/dashboard');
+        } else if (selectedRole === 'Agent') {
+          navigate('/agent/dashboard');
+        } else if (selectedRole === 'Supermarket') {
+          navigate('/supermarket/dashboard');
         } else {
-          // Other roles can go to different dashboards later
-          navigate('/admin/dashboard'); // For now, all go to admin dashboard
+          // Mặc định redirect theo role từ API
+          if (response.data.loaiTaiKhoan === 'Admin') {
+            navigate('/admin/dashboard');
+          } else if (response.data.loaiTaiKhoan === 'Farmer') {
+            navigate('/farmer/dashboard');
+          } else if (response.data.loaiTaiKhoan === 'Agent') {
+            navigate('/agent/dashboard');
+          } else if (response.data.loaiTaiKhoan === 'Supermarket') {
+            navigate('/supermarket/dashboard');
+          } else {
+            navigate('/admin/dashboard');
+          }
         }
       } else {
         message.error(response.message || 'Đăng nhập thất bại!');
@@ -80,6 +106,22 @@ const Login: React.FC = () => {
               prefix={<LockOutlined />}
               placeholder="Mật khẩu"
             />
+          </Form.Item>
+
+          <Form.Item
+            name="loaiTaiKhoan"
+            rules={[{ required: true, message: 'Vui lòng chọn loại tài khoản!' }]}
+          >
+            <Select
+              placeholder="Chọn loại tài khoản"
+              suffixIcon={<TeamOutlined />}
+              size="large"
+            >
+              <Select.Option value="Admin">Quản trị viên</Select.Option>
+              <Select.Option value="Farmer">Nông dân</Select.Option>
+              <Select.Option value="Agent">Đại lý</Select.Option>
+              <Select.Option value="Supermarket">Siêu thị</Select.Option>
+            </Select>
           </Form.Item>
 
           <Form.Item>

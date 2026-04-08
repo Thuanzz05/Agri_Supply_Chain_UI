@@ -7,6 +7,10 @@ import Login from './pages/Login';
 import Dashboard from './pages/admin/Dashboard';
 import Users from './pages/admin/Users';
 import Reports from './pages/admin/Reports';
+import DashboardNongDan from './pages/farmer/DashboardNongDan';
+import QuanLySanPham from './pages/farmer/QuanLySanPham';
+import DashboardDaiLy from './pages/agent/DashboardDaiLy';
+import DashboardSieuThi from './pages/supermarket/DashboardSieuThi';
 import ProtectedRoute from './components/ProtectedRoute';
 import 'antd/dist/reset.css';
 
@@ -39,6 +43,38 @@ function App() {
             element={
               <ProtectedRoute>
                 <Reports />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/farmer/dashboard" 
+            element={
+              <ProtectedRoute>
+                <DashboardNongDan />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/farmer/products" 
+            element={
+              <ProtectedRoute>
+                <QuanLySanPham />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/agent/dashboard" 
+            element={
+              <ProtectedRoute>
+                <DashboardDaiLy />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/supermarket/dashboard" 
+            element={
+              <ProtectedRoute>
+                <DashboardSieuThi />
               </ProtectedRoute>
             } 
           />

@@ -45,15 +45,9 @@ export const authService = {
       const response = await apiClient.post<LoginResponse>('/api/auth/login', loginData);
       
       if (response.data.success && response.data.data) {
-        // Lưu token với key đúng từ API response
+        // Chỉ lưu token, user data sẽ được lưu ở Login component
         const token = response.data.data.token;
-        
         localStorage.setItem('token', token);
-        localStorage.setItem('user', JSON.stringify({
-          maTaiKhoan: response.data.data.maTaiKhoan,
-          tenDangNhap: response.data.data.tenDangNhap,
-          loaiTaiKhoan: response.data.data.loaiTaiKhoan
-        }));
       }
       
       return response.data;
