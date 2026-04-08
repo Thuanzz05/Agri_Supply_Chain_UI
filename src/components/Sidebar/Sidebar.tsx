@@ -6,6 +6,7 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  FileTextOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
@@ -35,6 +36,11 @@ const Sidebar: React.FC = () => {
       key: '/admin/users', 
       icon: <UserOutlined />, 
       label: 'Người dùng' 
+    },
+    { 
+      key: '/admin/reports', 
+      icon: <FileTextOutlined />, 
+      label: 'Báo cáo' 
     },
     { 
       type: 'divider'
