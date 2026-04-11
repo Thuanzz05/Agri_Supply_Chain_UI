@@ -61,5 +61,15 @@ export const apiService = {
     } catch (error) {
       throw error;
     }
+  },
+
+  // API xóa sản phẩm
+  async deleteFarmerProduct(maSanPham: number) {
+    try {
+      const response = await apiClient.delete(`/api-nongdan/san-pham/delete/${maSanPham}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 };

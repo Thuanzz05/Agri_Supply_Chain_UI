@@ -128,6 +128,29 @@ const QuanLySanPham: React.FC = () => {
     }
   };
 
+  // Hàm xử lý xóa sản phẩm
+  const handleDelete = (record: DataType) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa sản phẩm',
+      content: `Bạn có chắc chắn muốn xóa sản phẩm "${record.tenSanPham}"?`,
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        try {
+          setLoading(true);
+          await apiService.deleteFarmerProduct(record.maSanPham);
+          message.success('Xóa sản phẩm thành công!');
+          fetchProducts(); // Tải lại danh sách sản phẩm
+        } catch (error: any) {
+          message.error(error.response?.data?.message || 'Không thể xóa sản phẩm');
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
+  };
+
   
   const columns: TableProps<DataType>['columns'] = [
     {
@@ -179,6 +202,7 @@ const QuanLySanPham: React.FC = () => {
             size="small" 
             icon={<DeleteOutlined />}
             style={{ minWidth: '65px' }}
+            onClick={() => handleDelete(record)}
           >
             Xóa
           </Button>
