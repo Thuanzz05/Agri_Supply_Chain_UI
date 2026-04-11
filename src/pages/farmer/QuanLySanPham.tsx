@@ -27,13 +27,13 @@ const QuanLySanPham: React.FC = () => {
   // 2.1: Tạo state để lưu dữ liệu từ API
   const [data, setData] = React.useState<DataType[]>([]);
   const [loading, setLoading] = React.useState(false);
-  const [total, setTotal] = React.useState(0);
   
   // State cho modal thêm sản phẩm
   const [isModalOpen, setIsModalOpen] = React.useState(false);
   const [isEditMode, setIsEditMode] = React.useState(false);
   const [editingProduct, setEditingProduct] = React.useState<DataType | null>(null);
   const [form] = Form.useForm();
+  const [searchText, setSearchText] = React.useState('');
 
   // 2.2: Tạo function để gọi API lấy dữ liệu
   const fetchProducts = async () => {
@@ -56,15 +56,12 @@ const QuanLySanPham: React.FC = () => {
         
         // 2.5: Cập nhật state với dữ liệu đã map
         setData(mappedData);
-        setTotal(mappedData.length);
       } else {
         setData([]);
-        setTotal(0);
       }
     } catch (error: any) {
       message.error('Không thể tải danh sách sản phẩm');
       setData([]);
-      setTotal(0);
     } finally {
       setLoading(false); // Tắt loading
     }
@@ -151,6 +148,17 @@ const QuanLySanPham: React.FC = () => {
     });
   };
 
+  // Lọc dữ liệu theo từ khóa tìm kiếm
+  const filteredData = React.useMemo(() => {
+    if (!searchText) return data;
+    
+    return data.filter(item => 
+      item.tenSanPham.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.donViTinh.toLowerCase().includes(searchText.toLowerCase()) ||
+      item.moTa.toLowerCase().includes(searchText.toLowerCase())
+    );
+  }, [data, searchText]);
+
   
   const columns: TableProps<DataType>['columns'] = [
     {
@@ -231,6 +239,9 @@ const QuanLySanPham: React.FC = () => {
             placeholder="Tìm kiếm sản phẩm..."
             prefix={<SearchOutlined />}
             style={{ width: 300 }}
+            value={searchText}
+            onChange={(e) => setSearchText(e.target.value)}
+            allowClear
           />
           <Button 
             type="primary" 
@@ -244,7 +255,7 @@ const QuanLySanPham: React.FC = () => {
         
         <Table<DataType>
           columns={columns} 
-          dataSource={data}
+          dataSource={filteredData}
           pagination={false}
           scroll={{ x: 800 }}
           loading={loading}
@@ -252,7 +263,7 @@ const QuanLySanPham: React.FC = () => {
         
         <CustomPagination
           current={currentPage}
-          total={total}
+          total={filteredData.length}
           pageSize={pageSize}
           onChange={(page, size) => {
             setCurrentPage(page);
