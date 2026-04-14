@@ -10,7 +10,7 @@ import {
 import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
-import type { ProductFormData } from '../../types/product';
+import type { DuLieuFormSanPham } from '../../types/sanPham';
 
 interface DataType {
   key: string;
@@ -101,7 +101,7 @@ const QuanLySanPham: React.FC = () => {
   };
 
   // Hàm xử lý submit form (thêm hoặc sửa)
-  const handleSubmit = async (values: ProductFormData) => {
+  const handleSubmit = async (values: DuLieuFormSanPham) => {
     try {
       setLoading(true);
       if (isEditMode && editingProduct) {

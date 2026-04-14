@@ -5,7 +5,7 @@ import { SearchOutlined, PlusOutlined, EditOutlined } from '@ant-design/icons';
 import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
-import type { BatchFormData, BatchUpdateData } from '../../types/batch';
+import type { DuLieuFormLoNongSan, DuLieuCapNhatLoNongSan } from '../../types/loNongSan';
 import dayjs from 'dayjs';
 
 // Định nghĩa kiểu dữ liệu cho bảng
@@ -150,7 +150,7 @@ const QuanLyLoNongSan: React.FC = () => {
       
       if (isEditMode && editingBatch) {
         // Sửa lô nông sản - chỉ gửi các trường cho phép update
-        const updateData: BatchUpdateData = {
+        const updateData: DuLieuCapNhatLoNongSan = {
           soLuongHienTai: values.soLuongHienTai,
           ngayThuHoach: values.ngayThuHoach.format('YYYY-MM-DD'),
           hanSuDung: values.hanSuDung.format('YYYY-MM-DD'),
@@ -161,7 +161,7 @@ const QuanLyLoNongSan: React.FC = () => {
         message.success('Cập nhật lô nông sản thành công!');
       } else {
         // Thêm lô nông sản mới
-        const batchData: BatchFormData = {
+        const batchData: DuLieuFormLoNongSan = {
           maTrangTrai: values.maTrangTrai,
           maSanPham: values.maSanPham,
           soLuongBanDau: values.soLuongBanDau,

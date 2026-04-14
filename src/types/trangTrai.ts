@@ -1,5 +1,5 @@
 // Type cho Trang Trại
-export interface Farm {
+export interface TrangTrai {
   maTrangTrai: number;
   maNongDan: number;
   tenTrangTrai: string;
@@ -9,7 +9,7 @@ export interface Farm {
 }
 
 // Type cho form data khi thêm/sửa trang trại
-export interface FarmFormData {
+export interface DuLieuFormTrangTrai {
   tenTrangTrai: string;
   diaChi: string;
   soChungNhan: string;

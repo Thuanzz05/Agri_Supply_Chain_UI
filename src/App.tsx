@@ -7,12 +7,12 @@ import Login from './pages/Login';
 import Dashboard from './pages/admin/Dashboard';
 import Users from './pages/admin/Users';
 import Reports from './pages/admin/Reports';
-import DashboardNongDan from './pages/farmer/DashboardNongDan';
-import QuanLySanPham from './pages/farmer/QuanLySanPham';
-import QuanLyTrangTrai from './pages/farmer/QuanLyTrangTrai';
-import QuanLyLoNongSan from './pages/farmer/QuanLyLoNongSan';
-import DashboardDaiLy from './pages/agent/DashboardDaiLy';
-import DashboardSieuThi from './pages/supermarket/DashboardSieuThi';
+import DashboardNongDan from './pages/NongDan/DashboardNongDan';
+import QuanLySanPham from './pages/NongDan/QuanLySanPham';
+import QuanLyTrangTrai from './pages/NongDan/QuanLyTrangTrai';
+import QuanLyLoNongSan from './pages/NongDan/QuanLyLoNongSan';
+import DashboardDaiLy from './pages/DaiLy/DashboardDaiLy';
+import DashboardSieuThi from './pages/SieuThi/DashboardSieuThi';
 import ProtectedRoute from './components/ProtectedRoute';
 import 'antd/dist/reset.css';
 

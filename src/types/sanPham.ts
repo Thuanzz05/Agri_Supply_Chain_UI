@@ -1,11 +1,11 @@
-export interface Product {
+export interface SanPham {
   maSanPham: number;
   tenSanPham: string;
   donViTinh: string;
   moTa: string;
 }
 
-export interface ProductFormData {
+export interface DuLieuFormSanPham {
   tenSanPham: string;
   donViTinh: string;
   moTa: string;

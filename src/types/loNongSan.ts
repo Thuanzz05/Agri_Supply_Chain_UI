@@ -1,5 +1,5 @@
 // Type cho Lô Nông Sản
-export interface Batch {
+export interface LoNongSan {
   maLo: number;
   maTrangTrai: number;
   maSanPham: number;
@@ -16,7 +16,7 @@ export interface Batch {
 }
 
 // Type cho form data khi thêm lô nông sản
-export interface BatchFormData {
+export interface DuLieuFormLoNongSan {
   maTrangTrai: number;
   maSanPham: number;
   soLuongBanDau: number;
@@ -26,7 +26,7 @@ export interface BatchFormData {
 }
 
 // Type cho form data khi sửa lô nông sản
-export interface BatchUpdateData {
+export interface DuLieuCapNhatLoNongSan {
   soLuongHienTai: number;
   ngayThuHoach: string;
   hanSuDung: string;

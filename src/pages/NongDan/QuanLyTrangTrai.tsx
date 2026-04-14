@@ -5,7 +5,7 @@ import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant
 import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
-import type { FarmFormData } from '../../types/farm';
+import type { DuLieuFormTrangTrai } from '../../types/trangTrai';
 
 // Định nghĩa kiểu dữ liệu cho bảng
 interface DataType {
@@ -99,7 +99,7 @@ const QuanLyTrangTrai: React.FC = () => {
   };
 
   // Hàm xử lý submit form thêm/sửa trang trại
-  const handleSubmit = async (values: FarmFormData) => {
+  const handleSubmit = async (values: DuLieuFormTrangTrai) => {
     try {
       setLoading(true);
       
