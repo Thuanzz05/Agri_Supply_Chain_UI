@@ -15,11 +15,21 @@ export interface Batch {
   donViTinh: string;
 }
 
-// Type cho form data khi thêm/sửa lô nông sản
+// Type cho form data khi thêm lô nông sản
 export interface BatchFormData {
   maTrangTrai: number;
   maSanPham: number;
   soLuongBanDau: number;
   ngayThuHoach: string;
   hanSuDung: string;
+  maQR: string;
+}
+
+// Type cho form data khi sửa lô nông sản
+export interface BatchUpdateData {
+  soLuongHienTai: number;
+  ngayThuHoach: string;
+  hanSuDung: string;
+  maQR: string;
+  trangThai: string;
 }
