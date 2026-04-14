@@ -1,10 +1,11 @@
 import React from 'react';
-import { Card, Table, message, Tag, Input } from 'antd';
+import { Card, Table, message, Tag, Input, Button, Modal, Form, InputNumber, DatePicker, Select, Space } from 'antd';
 import type { TableProps } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, PlusOutlined } from '@ant-design/icons';
 import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
+import type { BatchFormData } from '../../types/batch';
 import dayjs from 'dayjs';
 
 // Định nghĩa kiểu dữ liệu cho bảng
@@ -33,6 +34,14 @@ const QuanLyLoNongSan: React.FC = () => {
   
   // State quản lý tìm kiếm
   const [searchText, setSearchText] = React.useState('');
+  
+  // State quản lý modal thêm lô nông sản
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [form] = Form.useForm();
+  
+  // State cho dropdown
+  const [farms, setFarms] = React.useState<any[]>([]);
+  const [products, setProducts] = React.useState<any[]>([]);
 
   // Function gọi API lấy danh sách lô nông sản
   const fetchBatches = async () => {
@@ -74,7 +83,71 @@ const QuanLyLoNongSan: React.FC = () => {
   // Gọi API khi component mount
   React.useEffect(() => {
     fetchBatches();
+    fetchFarms();
+    fetchProducts();
   }, []);
+
+  // Function lấy danh sách trang trại
+  const fetchFarms = async () => {
+    try {
+      const response = await apiService.getAllFarms();
+      if (response && response.data) {
+        setFarms(Array.isArray(response.data) ? response.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching farms:', error);
+    }
+  };
+
+  // Function lấy danh sách sản phẩm
+  const fetchProducts = async () => {
+    try {
+      const response = await apiService.getFarmerProducts();
+      if (response && response.data) {
+        setProducts(Array.isArray(response.data) ? response.data : []);
+      }
+    } catch (error) {
+      console.error('Error fetching products:', error);
+    }
+  };
+
+  // Hàm mở modal thêm mới
+  const showModal = () => {
+    form.resetFields();
+    setIsModalOpen(true);
+  };
+
+  // Hàm đóng modal
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
+
+  // Hàm xử lý submit form thêm lô nông sản
+  const handleSubmit = async (values: any) => {
+    try {
+      setLoading(true);
+      
+      const batchData: BatchFormData = {
+        maTrangTrai: values.maTrangTrai,
+        maSanPham: values.maSanPham,
+        soLuongBanDau: values.soLuongBanDau,
+        ngayThuHoach: values.ngayThuHoach.format('YYYY-MM-DD'),
+        hanSuDung: values.hanSuDung.format('YYYY-MM-DD')
+      };
+      
+      await apiService.addBatch(batchData);
+      message.success('Thêm lô nông sản thành công!');
+      setIsModalOpen(false);
+      form.resetFields();
+      fetchBatches();
+    } catch (error: any) {
+      console.error('Error adding batch:', error);
+      message.error(error.response?.data?.message || 'Không thể thêm lô nông sản');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Lọc dữ liệu theo từ khóa tìm kiếm
   const filteredData = React.useMemo(() => {
@@ -186,7 +259,7 @@ const QuanLyLoNongSan: React.FC = () => {
       <Card>
         <div style={{
           display: 'flex',
-          justifyContent: 'flex-start',
+          justifyContent: 'space-between',
           alignItems: 'center',
           marginBottom: '24px',
           padding: '16px 0',
@@ -200,6 +273,14 @@ const QuanLyLoNongSan: React.FC = () => {
             onChange={(e) => setSearchText(e.target.value)}
             allowClear
           />
+          <Button 
+            type="primary" 
+            icon={<PlusOutlined />}
+            onClick={showModal}
+            style={{ height: '32px', fontSize: '14px' }}
+          >
+            Thêm lô nông sản
+          </Button>
         </div>
         
         <Table<DataType>
@@ -223,6 +304,116 @@ const QuanLyLoNongSan: React.FC = () => {
           }
         />
       </Card>
+
+      {/* Modal thêm lô nông sản */}
+      <Modal
+        title="Thêm lô nông sản mới"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+        width={600}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          style={{ marginTop: 24 }}
+        >
+          <Form.Item
+            label="Trang trại"
+            name="maTrangTrai"
+            rules={[
+              { required: true, message: 'Vui lòng chọn trang trại!' }
+            ]}
+          >
+            <Select placeholder="Chọn trang trại">
+              {farms.map(farm => (
+                <Select.Option key={farm.maTrangTrai} value={farm.maTrangTrai}>
+                  {farm.tenTrangTrai}
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Sản phẩm"
+            name="maSanPham"
+            rules={[
+              { required: true, message: 'Vui lòng chọn sản phẩm!' }
+            ]}
+          >
+            <Select placeholder="Chọn sản phẩm">
+              {products.map(product => (
+                <Select.Option key={product.maSanPham} value={product.maSanPham}>
+                  {product.tenSanPham} ({product.donViTinh})
+                </Select.Option>
+              ))}
+            </Select>
+          </Form.Item>
+
+          <Form.Item
+            label="Số lượng ban đầu"
+            name="soLuongBanDau"
+            rules={[
+              { required: true, message: 'Vui lòng nhập số lượng!' },
+              { type: 'number', min: 1, message: 'Số lượng phải lớn hơn 0!' }
+            ]}
+          >
+            <InputNumber 
+              placeholder="Nhập số lượng" 
+              style={{ width: '100%' }}
+              min={1}
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Ngày thu hoạch"
+            name="ngayThuHoach"
+            rules={[
+              { required: true, message: 'Vui lòng chọn ngày thu hoạch!' }
+            ]}
+          >
+            <DatePicker 
+              placeholder="Chọn ngày thu hoạch"
+              style={{ width: '100%' }}
+              format="DD/MM/YYYY"
+            />
+          </Form.Item>
+
+          <Form.Item
+            label="Hạn sử dụng"
+            name="hanSuDung"
+            rules={[
+              { required: true, message: 'Vui lòng chọn hạn sử dụng!' }
+            ]}
+          >
+            <DatePicker 
+              placeholder="Chọn hạn sử dụng"
+              style={{ width: '100%' }}
+              format="DD/MM/YYYY"
+            />
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+            <Space>
+              <Button 
+                onClick={handleCancel}
+                style={{ height: '32px', padding: '4px 15px' }}
+              >
+                Hủy
+              </Button>
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                loading={loading}
+                style={{ height: '32px', padding: '4px 15px' }}
+              >
+                Thêm lô nông sản
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
     </AdminLayout>
   );
 };
