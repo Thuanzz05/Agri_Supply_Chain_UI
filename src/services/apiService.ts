@@ -205,5 +205,67 @@ export const apiService = {
     } catch (error) {
       throw error;
     }
+  },
+
+  // ============ API KHO HÀNG ĐẠI LÝ ============
+  
+  // Lấy tất cả kho hàng
+  async getAllWarehouses() {
+    try {
+      const response = await apiClient.get('/api-daily/kho/get-all');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Lấy kho hàng theo đại lý
+  async getWarehousesByAgent(maDaiLy: string) {
+    try {
+      const response = await apiClient.get(`/api-daily/kho/get-by-dai-ly/${maDaiLy}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Lấy kho hàng theo ID
+  async getWarehouseById(id: number) {
+    try {
+      const response = await apiClient.get(`/api-daily/kho/get-by-id/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Thêm kho hàng mới
+  async addWarehouse(warehouseData: any) {
+    try {
+      const response = await apiClient.post('/api-daily/kho/create', warehouseData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Cập nhật kho hàng
+  async updateWarehouse(id: number, warehouseData: any) {
+    try {
+      const response = await apiClient.put(`/api-daily/kho/update/${id}`, warehouseData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // Xóa kho hàng
+  async deleteWarehouse(id: number) {
+    try {
+      const response = await apiClient.delete(`/api-daily/kho/delete/${id}`);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
   }
 };

@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/admin/Dashboard';
 import Users from './pages/admin/Users';
 import Reports from './pages/admin/Reports';
+import QuanLyKho from './pages/DaiLy/QuanLyKho';
 import DashboardNongDan from './pages/NongDan/DashboardNongDan';
 import QuanLySanPham from './pages/NongDan/QuanLySanPham';
 import QuanLyTrangTrai from './pages/NongDan/QuanLyTrangTrai';
@@ -85,6 +86,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardDaiLy />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/agent/warehouses" 
+            element={
+              <ProtectedRoute>
+                <QuanLyKho />
               </ProtectedRoute>
             } 
           />
