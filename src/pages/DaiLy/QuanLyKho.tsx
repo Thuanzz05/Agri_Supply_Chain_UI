@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Table, Button, Space, Input, message } from 'antd';
+import { Card, Table, Button, Space, Input, message, Modal, Form } from 'antd';
 import type { TableProps } from 'antd';
 import { 
   PlusOutlined, 
@@ -10,6 +10,7 @@ import {
 import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
+import type { DuLieuFormKhoThem } from '../../types/kho';
 
 interface DataType {
   key: string;
@@ -28,6 +29,10 @@ const QuanLyKho: React.FC = () => {
   const [data, setData] = React.useState<DataType[]>([]);
   const [loading, setLoading] = React.useState(false);
   const [searchText, setSearchText] = React.useState('');
+
+  // State cho modal thêm kho hàng
+  const [isModalOpen, setIsModalOpen] = React.useState(false);
+  const [form] = Form.useForm();
 
   // Function để gọi API lấy dữ liệu
   const fetchWarehouses = async () => {
@@ -64,6 +69,34 @@ const QuanLyKho: React.FC = () => {
   React.useEffect(() => {
     fetchWarehouses();
   }, []);
+
+  // Hàm mở modal thêm mới
+  const showModal = () => {
+    form.resetFields();
+    setIsModalOpen(true);
+  };
+
+  // Hàm đóng modal
+  const handleCancel = () => {
+    setIsModalOpen(false);
+    form.resetFields();
+  };
+
+  // Hàm xử lý submit form thêm kho hàng
+  const handleSubmit = async (values: DuLieuFormKhoThem) => {
+    try {
+      setLoading(true);
+      await apiService.addWarehouse(values);
+      message.success('Thêm kho hàng thành công!');
+      setIsModalOpen(false);
+      form.resetFields();
+      fetchWarehouses(); // Tải lại dữ liệu
+    } catch (error: any) {
+      message.error(error.response?.data?.message || 'Không thể thêm kho hàng');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Lọc dữ liệu theo từ khóa tìm kiếm
   const filteredData = React.useMemo(() => {
@@ -181,6 +214,7 @@ const QuanLyKho: React.FC = () => {
             type="primary" 
             icon={<PlusOutlined />}
             size="large"
+            onClick={showModal}
           >
             Thêm kho hàng
           </Button>
@@ -207,6 +241,97 @@ const QuanLyKho: React.FC = () => {
           }
         />
       </Card>
+
+      {/* Modal thêm kho hàng */}
+      <Modal
+        title="Thêm kho hàng mới"
+        open={isModalOpen}
+        onCancel={handleCancel}
+        footer={null}
+        width={600}
+      >
+        <Form
+          form={form}
+          layout="vertical"
+          onFinish={handleSubmit}
+          style={{ marginTop: 24 }}
+        >
+          <Form.Item
+            label="Tên kho"
+            name="tenKho"
+            rules={[
+              { required: true, message: 'Vui lòng nhập tên kho!' },
+              { min: 3, message: 'Tên kho phải có ít nhất 3 ký tự!' }
+            ]}
+          >
+            <Input placeholder="Nhập tên kho hàng" />
+          </Form.Item>
+
+          <Form.Item
+            label="Loại kho"
+            name="loaiKho"
+            rules={[
+              { required: true, message: 'Vui lòng nhập loại kho!' }
+            ]}
+          >
+            <Input placeholder="Ví dụ: daily, lanh, thuong..." />
+          </Form.Item>
+
+          <Form.Item
+            label="Mã chủ sở hữu"
+            name="maChuSoHuu"
+            rules={[
+              { required: true, message: 'Vui lòng nhập mã chủ sở hữu!' }
+            ]}
+          >
+            <Input type="number" placeholder="Nhập mã chủ sở hữu" />
+          </Form.Item>
+
+          <Form.Item
+            label="Loại chủ sở hữu"
+            name="loaiChuSoHuu"
+            rules={[
+              { required: true, message: 'Vui lòng nhập loại chủ sở hữu!' }
+            ]}
+          >
+            <Input placeholder="Ví dụ: daily, nongdan..." />
+          </Form.Item>
+
+          <Form.Item
+            label="Địa chỉ"
+            name="diaChi"
+            rules={[
+              { required: true, message: 'Vui lòng nhập địa chỉ!' }
+            ]}
+          >
+            <Input.TextArea 
+              rows={3} 
+              placeholder="Nhập địa chỉ chi tiết của kho hàng"
+            />
+          </Form.Item>
+
+          <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
+            <Space>
+              <Button onClick={handleCancel} size="middle">
+                Hủy
+              </Button>
+              <Button 
+                type="primary" 
+                htmlType="submit" 
+                loading={loading} 
+                size="middle"
+                style={{ 
+                  fontSize: '14px',
+                  height: '32px',
+                  padding: '0 15px'
+                }}
+              >
+                Thêm kho hàng
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
     </AdminLayout>
   );
 };
