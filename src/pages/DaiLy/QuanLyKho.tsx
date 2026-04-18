@@ -115,12 +115,35 @@ const QuanLyKho: React.FC = () => {
       form.resetFields();
       setIsEditMode(false);
       setEditingWarehouse(null);
-      fetchWarehouses(); // Tải lại dữ liệu
+      fetchWarehouses();
     } catch (error: any) {
       message.error(error.response?.data?.message || 'Không thể lưu kho hàng');
     } finally {
       setLoading(false);
     }
+  };
+
+  // Hàm xử lý xóa kho hàng
+  const handleDelete = (record: DataType) => {
+    Modal.confirm({
+      title: 'Xác nhận xóa kho hàng',
+      content: `Bạn có chắc chắn muốn xóa kho "${record.tenKho}"?`,
+      okText: 'Xóa',
+      okType: 'danger',
+      cancelText: 'Hủy',
+      onOk: async () => {
+        try {
+          setLoading(true);
+          await apiService.deleteWarehouse(record.maKho);
+          message.success('Xóa kho hàng thành công!');
+          fetchWarehouses();
+        } catch (error: any) {
+          message.error(error.response?.data?.message || 'Không thể xóa kho hàng');
+        } finally {
+          setLoading(false);
+        }
+      }
+    });
   };
 
   // Lọc dữ liệu theo từ khóa tìm kiếm
@@ -204,6 +227,7 @@ const QuanLyKho: React.FC = () => {
             size="small" 
             icon={<DeleteOutlined />}
             style={{ minWidth: '65px' }}
+            onClick={() => handleDelete(record)}
           >
             Xóa
           </Button>
