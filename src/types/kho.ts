@@ -21,3 +21,18 @@ export interface DuLieuFormKhoSua {
   loaiKho: string;
   diaChi: string;
 }
+
+export interface TonKhoDaiLy {
+  maKho: number;
+  maLo: number;
+  soLuong: number;
+  ngayCapNhat: string;
+  tenKho: string;
+  tenSanPham: string;
+  donViTinh: string;
+  maQR: string;
+}
+
+export interface DuLieuCapNhatTonKho {
+  soLuongMoi: number;
+}

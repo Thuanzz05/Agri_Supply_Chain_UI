@@ -13,6 +13,7 @@ import QuanLySanPham from './pages/NongDan/QuanLySanPham';
 import QuanLyTrangTrai from './pages/NongDan/QuanLyTrangTrai';
 import QuanLyLoNongSan from './pages/NongDan/QuanLyLoNongSan';
 import DashboardDaiLy from './pages/DaiLy/DashboardDaiLy';
+import TonKhoDaiLy from './pages/DaiLy/TonKhoDaiLy';
 import DashboardSieuThi from './pages/SieuThi/DashboardSieuThi';
 import ProtectedRoute from './components/ProtectedRoute';
 import 'antd/dist/reset.css';
@@ -94,6 +95,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <QuanLyKho />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/agent/inventory" 
+            element={
+              <ProtectedRoute>
+                <TonKhoDaiLy />
               </ProtectedRoute>
             } 
           />

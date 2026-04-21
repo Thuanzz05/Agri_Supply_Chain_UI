@@ -267,5 +267,74 @@ export const apiService = {
     } catch (error) {
       throw error;
     }
+  },
+
+  // API lấy danh sách tồn kho của đại lý
+  async getAllAgentInventory() {
+    try {
+      const response = await apiClient.get('/api-daily/ton-kho/get-all');
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
+  // API cáº­p nháº­t sá»‘ lÆ°á»£ng tá»“n kho cá»§a Ä‘áº¡i lÃ½
+  async updateAgentInventoryQuantity(maKho: number, maLo: number, payload: { soLuongMoi: number }) {
+    const routes = Array.from(new Set([
+      '/api-daily/ton-kho/update-so-luong',
+      '/api/ton-kho/update-so-luong',
+      '/ton-kho/update-so-luong',
+    ]));
+
+    let lastError: any = null;
+
+    for (const route of routes) {
+      try {
+        const response = await apiClient.put(route, null, {
+          params: {
+            maKho,
+            maLo,
+            soLuongMoi: payload.soLuongMoi,
+          },
+        });
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (status !== 404) {
+          throw error;
+        }
+      }
+    }
+
+    throw lastError;
+  },
+
+  // API xoa ton kho cua dai ly theo kho va lo
+  async deleteAgentInventory(maKho: number, maLo: number) {
+    const routes = Array.from(new Set([
+      `/api-daily/ton-kho/delete/${maKho}/${maLo}`,
+      `/api-daily/ton-kho/delete/${maLo}/${maKho}`,
+      `/ton-kho/delete/${maKho}/${maLo}`,
+      `/ton-kho/delete/${maLo}/${maKho}`,
+    ]));
+
+    let lastError: any = null;
+
+    for (const route of routes) {
+      try {
+        const response = await apiClient.delete(route);
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (status !== 404 && status !== 405) {
+          throw error;
+        }
+      }
+    }
+
+    throw lastError;
   }
 };
