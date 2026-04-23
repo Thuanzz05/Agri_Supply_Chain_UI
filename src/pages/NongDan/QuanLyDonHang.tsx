@@ -101,10 +101,11 @@ const QuanLyDonHangNongDan: React.FC = () => {
       }
 
       const user = JSON.parse(userStr);
-      const maNongDan = user.maNguoiDung || user.id || user.maNongDan;
+      // Xử lý cả PascalCase và camelCase
+      const maNongDan = user.maNongDan || user.MaNongDan;
       
       if (!maNongDan) {
-        message.error('Không tìm thấy thông tin nông dân. Vui lòng đăng nhập lại');
+        message.warning('Phiên đăng nhập cũ. Vui lòng đăng xuất và đăng nhập lại để cập nhật thông tin');
         setOrders([]);
         return;
       }

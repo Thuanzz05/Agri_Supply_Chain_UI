@@ -316,20 +316,71 @@ export const apiService = {
   // ==================== API Đơn hàng ====================
   
   // Lấy đơn hàng theo nông dân
-  getFarmerOrdersByFarmer: async (maNongDan: number) => {
-    const response = await apiClient.get(`/api-nongdan/don-hang/get-by-nong-dan/${maNongDan}`);
-    return response.data;
+  async getFarmerOrdersByFarmer(maNongDan: number) {
+    const routes = [
+      `/api-nongdan/don-hang/get-by-nong-dan/${maNongDan}`,
+      `/api/don-hang/get-by-nong-dan/${maNongDan}`
+    ];
+    
+    let lastError: any = null;
+    for (const route of routes) {
+      try {
+        const response = await apiClient.get(route);
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (status !== 404) {
+          throw error;
+        }
+      }
+    }
+    throw lastError;
   },
 
   // Lấy chi tiết đơn hàng
-  getFarmerOrderById: async (id: number) => {
-    const response = await apiClient.get(`/api-nongdan/don-hang/get-by-id/${id}`);
-    return response.data;
+  async getFarmerOrderById(id: number) {
+    const routes = [
+      `/api-nongdan/don-hang/get-by-id/${id}`,
+      `/api/don-hang/get-by-id/${id}`
+    ];
+    
+    let lastError: any = null;
+    for (const route of routes) {
+      try {
+        const response = await apiClient.get(route);
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (status !== 404) {
+          throw error;
+        }
+      }
+    }
+    throw lastError;
   },
 
   // Xác nhận/từ chối đơn hàng (nông dân)
-  updateFarmerOrderStatus: async (id: number, trangThai: string) => {
-    const response = await apiClient.put(`/api-nongdan/don-hang/xac-nhan/${id}`, { trangThai });
-    return response.data;
+  async updateFarmerOrderStatus(id: number, trangThai: string) {
+    const routes = [
+      `/api-nongdan/don-hang/xac-nhan/${id}`,
+      `/api/don-hang/xac-nhan/${id}`
+    ];
+    
+    let lastError: any = null;
+    for (const route of routes) {
+      try {
+        const response = await apiClient.put(route, { trangThai });
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (status !== 404) {
+          throw error;
+        }
+      }
+    }
+    throw lastError;
   },
 };

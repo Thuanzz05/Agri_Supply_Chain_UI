@@ -34,10 +34,14 @@ const Login: React.FC = () => {
         // Lưu loại tài khoản đã chọn vào localStorage
         const selectedRole = values.loaiTaiKhoan;
         const userData = {
-          maTaiKhoan: response.data.maTaiKhoan,
-          tenDangNhap: response.data.tenDangNhap,
-          loaiTaiKhoan: selectedRole // Sử dụng loại tài khoản đã chọn
+          maTaiKhoan: response.data.maTaiKhoan || (response.data as any).MaTaiKhoan,
+          tenDangNhap: response.data.tenDangNhap || (response.data as any).TenDangNhap,
+          loaiTaiKhoan: selectedRole, // Sử dụng loại tài khoản đã chọn
+          maNongDan: response.data.maNongDan || (response.data as any).MaNongDan,
+          maDaiLy: response.data.maDaiLy || (response.data as any).MaDaiLy,
+          maSieuThi: response.data.maSieuThi || (response.data as any).MaSieuThi
         };
+        
         localStorage.setItem('user', JSON.stringify(userData));
         
         // Redirect dựa trên loại tài khoản được chọn

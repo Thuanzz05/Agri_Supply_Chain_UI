@@ -26,6 +26,9 @@ export interface User {
   maTaiKhoan: number;
   tenDangNhap: string;
   loaiTaiKhoan: string;
+  maNongDan?: number;
+  maDaiLy?: number;
+  maSieuThi?: number;
 }
 
 export interface LoginResponse {
@@ -35,6 +38,9 @@ export interface LoginResponse {
     maTaiKhoan: number;
     tenDangNhap: string;
     loaiTaiKhoan: string;
+    maNongDan?: number;
+    maDaiLy?: number;
+    maSieuThi?: number;
     token: string;
   };
 }
