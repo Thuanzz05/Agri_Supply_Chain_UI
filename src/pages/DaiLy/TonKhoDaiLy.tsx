@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  Alert,
   Button,
   Card,
   Col,
@@ -8,14 +9,13 @@ import {
   InputNumber,
   Modal,
   Row,
-  Space,
   Statistic,
   Table,
   Tag,
   message,
 } from 'antd';
 import type { TableProps } from 'antd';
-import { DatabaseOutlined, DeleteOutlined, EditOutlined, QrcodeOutlined, SearchOutlined, ShopOutlined } from '@ant-design/icons';
+import { DatabaseOutlined, EditOutlined, QrcodeOutlined, SearchOutlined, ShopOutlined, WarningOutlined } from '@ant-design/icons';
 import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
@@ -85,18 +85,21 @@ const TonKhoDaiLyPage: React.FC = () => {
   const fetchInventory = async () => {
     setLoading(true);
     try {
-      const response = await apiService.getAllAgentInventory();
+      const response = await apiService.getAllInventory();
       const items = Array.isArray(response?.data) ? response.data : [];
 
+      // Chỉ hiển thị tồn kho có số lượng > 0
+      const filteredItems = items.filter((item: TonKhoDaiLy) => item.soLuong > 0);
+
       setInventory(
-        items.map((item: TonKhoDaiLy) => ({
+        filteredItems.map((item: TonKhoDaiLy) => ({
           ...item,
           key: `${item.maKho}-${item.maLo}-${item.maQR}`,
         })),
       );
     } catch (error: any) {
       setInventory([]);
-      message.error(getApiErrorMessage(error, 'Khong the tai danh sach ton kho'));
+      message.error(getApiErrorMessage(error, 'Không thể tải danh sách tồn kho'));
     } finally {
       setLoading(false);
     }
@@ -125,35 +128,15 @@ const TonKhoDaiLyPage: React.FC = () => {
 
     setSubmitting(true);
     try {
-      await apiService.updateAgentInventoryQuantity(selectedItem.maKho, selectedItem.maLo, values);
-      message.success('Cap nhat so luong ton kho thanh cong');
+      await apiService.adjustInventory(selectedItem.maKho, selectedItem.maLo, values.soLuongMoi);
+      message.success('Điều chỉnh số lượng tồn kho thành công');
       handleCloseModal();
       await fetchInventory();
     } catch (error: any) {
-      message.error(getApiErrorMessage(error, 'Khong the cap nhat so luong ton kho'));
+      message.error(getApiErrorMessage(error, 'Không thể điều chỉnh số lượng tồn kho'));
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const handleDeleteInventory = (item: TonKhoTableItem) => {
-    Modal.confirm({
-      title: 'Xac nhan xoa ton kho',
-      content: `Ban co chac chan muon xoa ton kho lo ${item.maLo} trong kho ${item.tenKho}?`,
-      okText: 'Xoa',
-      okType: 'danger',
-      cancelText: 'Huy',
-      onOk: async () => {
-        try {
-          await apiService.deleteAgentInventory(item.maKho, item.maLo);
-          message.success('Xoa ton kho thanh cong');
-          await fetchInventory();
-        } catch (error: any) {
-          message.error(error?.response?.data?.message || 'Khong the xoa ton kho');
-          throw error;
-        }
-      },
-    });
   };
 
   const filteredInventory = React.useMemo(() => {
@@ -203,63 +186,62 @@ const TonKhoDaiLyPage: React.FC = () => {
 
   const columns: TableProps<TonKhoTableItem>['columns'] = [
     {
-      title: 'Ma kho',
+      title: 'Mã kho',
       dataIndex: 'maKho',
       key: 'maKho',
       width: 100,
     },
     {
-      title: 'Ten kho',
+      title: 'Tên kho',
       dataIndex: 'tenKho',
       key: 'tenKho',
       width: 220,
     },
     {
-      title: 'Ma lo',
+      title: 'Mã lô',
       dataIndex: 'maLo',
       key: 'maLo',
       width: 100,
     },
     {
-      title: 'San pham',
+      title: 'Sản phẩm',
       dataIndex: 'tenSanPham',
       key: 'tenSanPham',
       width: 200,
     },
     {
-      title: 'So luong',
+      title: 'Số lượng',
       key: 'soLuong',
       width: 160,
       render: (_, record) => `${record.soLuong.toLocaleString('vi-VN')} ${record.donViTinh}`,
     },
     {
-      title: 'Ma QR',
+      title: 'Mã QR',
       dataIndex: 'maQR',
       key: 'maQR',
       width: 120,
       render: (value: string) => <Tag color="green">{value}</Tag>,
     },
     {
-      title: 'Ngay cap nhat',
+      title: 'Ngày cập nhật',
       dataIndex: 'ngayCapNhat',
       key: 'ngayCapNhat',
       width: 140,
       render: (value: string) => formatDate(value),
     },
     {
-      title: 'Thao tac',
+      title: 'Thao tác',
       key: 'action',
-      width: 220,
+      width: 150,
       fixed: 'right',
       render: (_, record) => (
-        <Space size="small">
-          <Button type="primary" icon={<EditOutlined />} onClick={() => showUpdateModal(record)}>
-            Sua
-          </Button>
-          <Button danger icon={<DeleteOutlined />} onClick={() => handleDeleteInventory(record)}>
-            Xoa
-          </Button>
-        </Space>
+        <Button 
+          type="primary" 
+          icon={<EditOutlined />} 
+          onClick={() => showUpdateModal(record)}
+        >
+          Điều chỉnh
+        </Button>
       ),
     },
   ];
@@ -267,9 +249,18 @@ const TonKhoDaiLyPage: React.FC = () => {
   return (
     <AdminLayout>
       <div className="page-header">
-        <h1>Ton kho dai ly</h1>
-        <p>Theo doi danh sach ton kho hien co tai cac kho cua dai ly</p>
+        <h1>Tồn kho đại lý</h1>
+        <p>Theo dõi danh sách tồn kho hiện có tại các kho của đại lý</p>
       </div>
+
+      <Alert
+        message="Lưu ý quan trọng"
+        description="Tồn kho tự động cập nhật khi nhập/xuất hàng. Chỉ sử dụng 'Điều chỉnh' cho trường hợp kiểm kê, hao hụt, hư hỏng hoặc sai lệch thực tế."
+        type="warning"
+        icon={<WarningOutlined />}
+        showIcon
+        style={{ marginBottom: 24 }}
+      />
 
       <Row gutter={[16, 16]} style={{ marginBottom: 24 }}>
         <Col xs={24} sm={12} lg={8}>
@@ -303,7 +294,7 @@ const TonKhoDaiLyPage: React.FC = () => {
           }}
         >
           <Input
-            placeholder="Tim theo kho, san pham, ma QR, ma lo..."
+            placeholder="Tìm theo kho, sản phẩm, mã QR, mã lô..."
             prefix={<SearchOutlined />}
             style={{ width: 360, maxWidth: '100%' }}
             value={searchText}
@@ -328,39 +319,47 @@ const TonKhoDaiLyPage: React.FC = () => {
             setCurrentPage(page);
             setPageSize(size || 10);
           }}
-          showTotal={(total, range) => `${range[0]}-${range[1]} cua ${total} dong ton kho`}
+          showTotal={(total, range) => `${range[0]}-${range[1]} của ${total} dòng tồn kho`}
         />
       </Card>
 
-      <Modal title="Sua so luong ton kho" open={isModalOpen} onCancel={handleCloseModal} footer={null} destroyOnHidden>
+      <Modal title="Điều chỉnh số lượng tồn kho" open={isModalOpen} onCancel={handleCloseModal} footer={null} destroyOnHidden>
+        <Alert
+          message="Chỉ điều chỉnh khi cần thiết"
+          description="Tồn kho tự động cập nhật qua nhập/xuất hàng. Chỉ điều chỉnh khi phát hiện sai lệch thực tế."
+          type="info"
+          showIcon
+          style={{ marginBottom: 20 }}
+        />
+        
         <Form form={form} layout="vertical" onFinish={handleUpdateQuantity} style={{ marginTop: 20 }}>
           <Form.Item label="Kho">
             <Input value={selectedItem?.tenKho} disabled />
           </Form.Item>
 
-          <Form.Item label="San pham">
+          <Form.Item label="Sản phẩm">
             <Input value={selectedItem?.tenSanPham} disabled />
           </Form.Item>
 
-          <Form.Item label="Ma lo">
+          <Form.Item label="Mã lô">
             <Input value={selectedItem?.maLo} disabled />
           </Form.Item>
 
           <Form.Item
-            label="So luong moi"
+            label="Số lượng mới"
             name="soLuongMoi"
             rules={[
-              { required: true, message: 'Vui long nhap so luong moi' },
-              { type: 'number', min: 0, message: 'So luong moi phai lon hon hoac bang 0' },
+              { required: true, message: 'Vui lòng nhập số lượng mới' },
+              { type: 'number', min: 0, message: 'Số lượng mới phải lớn hơn hoặc bằng 0' },
             ]}
           >
-            <InputNumber style={{ width: '100%' }} min={0} step={0.1} />
+            <InputNumber style={{ width: '100%' }} min={0} step={0.1} addonAfter={selectedItem?.donViTinh} />
           </Form.Item>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-            <Button onClick={handleCloseModal}>Huy</Button>
+            <Button onClick={handleCloseModal}>Hủy</Button>
             <Button type="primary" htmlType="submit" loading={submitting}>
-              Luu so luong
+              Xác nhận điều chỉnh
             </Button>
           </div>
         </Form>
