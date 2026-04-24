@@ -1,9 +1,12 @@
 import { Button } from 'antd';
+import { useNavigate } from 'react-router-dom';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
 import './HomePage.css';
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
   return (
     <div className="page">
       <Header />
@@ -14,8 +17,8 @@ const HomePage = () => {
             <h1>Hệ thống Quản lý Chuỗi Cung Ứng Nông Sản</h1>
             <p>Kiểm soát và theo dõi toàn diện từ trang trại đến người tiêu dùng. Tối ưu hóa quy trình và đảm bảo chất lượng với khả năng truy xuất nguồn gốc hoàn chỉnh.</p>
             <div className="btns">
-              <Button type="primary" size="large">Bắt đầu ngay</Button>
-              <Button size="large">Tìm hiểu thêm</Button>
+              <Button type="primary" size="large" onClick={() => navigate('/register')}>Đăng ký ngay</Button>
+              <Button size="large" onClick={() => navigate('/about')}>Tìm hiểu thêm</Button>
             </div>
           </div>
           <div className="visual">
@@ -148,8 +151,8 @@ const HomePage = () => {
           <h2>Sẵn sàng bắt đầu?</h2>
           <p>Tham gia cùng hàng nghìn doanh nghiệp nông nghiệp đang sử dụng nền tảng của chúng tôi</p>
           <div className="btns">
-            <Button type="primary" size="large">Dùng thử miễn phí</Button>
-            <Button size="large">Liên hệ tư vấn</Button>
+            <Button type="primary" size="large" onClick={() => navigate('/register')}>Dùng thử miễn phí</Button>
+            <Button size="large" onClick={() => navigate('/about')}>Liên hệ tư vấn</Button>
           </div>
         </div>
       </section>

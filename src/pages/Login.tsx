@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { Form, Input, Button, Card, Typography, message, Select } from 'antd';
 import { UserOutlined, LockOutlined, LoginOutlined, TeamOutlined } from '@ant-design/icons';
 import { authService, type LoginRequest } from '../services/authService';
@@ -139,6 +139,10 @@ const Login: React.FC = () => {
               Đăng nhập
             </Button>
           </Form.Item>
+
+          <div style={{ textAlign: 'center', marginTop: 16, color: '#666' }}>
+            Chưa có tài khoản? <Link to="/register" style={{ color: '#1890ff', fontWeight: 500 }}>Đăng ký ngay</Link>
+          </div>
         </Form>
       </Card>
     </div>

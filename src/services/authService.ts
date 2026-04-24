@@ -22,6 +22,16 @@ export interface LoginRequest {
   MatKhau: string;
 }
 
+export interface RegisterRequest {
+  TenDangNhap: string;
+  MatKhau: string;
+  Email: string;
+  LoaiTaiKhoan: string;
+  HoTen?: string;
+  SoDienThoai?: string;
+  DiaChi?: string;
+}
+
 export interface User {
   maTaiKhoan: number;
   tenDangNhap: string;
@@ -46,6 +56,18 @@ export interface LoginResponse {
 }
 
 export const authService = {
+  async register(registerData: RegisterRequest): Promise<{ success: boolean; message: string }> {
+    try {
+      const response = await apiClient.post('/api/auth/register', registerData);
+      return response.data;
+    } catch (error: any) {
+      if (error.response?.data) {
+        return error.response.data;
+      }
+      throw new Error('Lỗi kết nối đến server');
+    }
+  },
+
   async login(loginData: LoginRequest): Promise<LoginResponse> {
     try {
       const response = await apiClient.post<LoginResponse>('/api/auth/login', loginData);

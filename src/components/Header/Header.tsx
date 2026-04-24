@@ -21,7 +21,9 @@ const Header = () => {
           <Link to="/login">
             <button className="btn-login">Đăng nhập</button>
           </Link>
-          <button className="btn-signup">Đăng ký</button>
+          <Link to="/register">
+            <button className="btn-signup">Đăng ký</button>
+          </Link>
         </div>
       </div>
     </nav>
