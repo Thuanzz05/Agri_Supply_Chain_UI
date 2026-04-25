@@ -12,6 +12,7 @@ import {
   InboxOutlined,
   HomeOutlined,
   AppstoreOutlined,
+  SafetyOutlined,
 } from '@ant-design/icons';
 import type { MenuProps } from 'antd';
 import { Button, Menu } from 'antd';
@@ -131,6 +132,11 @@ const Sidebar: React.FC = () => {
       key: '/agent/orders-out', 
       icon: <InboxOutlined />, 
       label: 'Đơn hàng bán ra' 
+    },
+    { 
+      key: '/agent/quality-check', 
+      icon: <SafetyOutlined />, 
+      label: 'Kiểm định chất lượng' 
     },
     { 
       type: 'divider'

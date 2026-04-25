@@ -568,4 +568,52 @@ export const apiService = {
     }
     throw lastError;
   },
+
+  // ==================== API Kiểm định chất lượng ====================
+  
+  // Lấy danh sách lô hàng cần kiểm định theo đại lý
+  async getLoHangKiemDinhByDaiLy(maDaiLy: number) {
+    const routes = [
+      `/api-daily/kiem-dinh/get-lo-hang-by-dai-ly/${maDaiLy}`,
+      `/api/kiem-dinh/get-lo-hang-by-dai-ly/${maDaiLy}`
+    ];
+    
+    let lastError: any = null;
+    for (const route of routes) {
+      try {
+        const response = await apiClient.get(route);
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (status !== 404) {
+          throw error;
+        }
+      }
+    }
+    throw lastError;
+  },
+
+  // Kiểm định lô hàng
+  async kiemDinhLoHang(kiemDinhData: any) {
+    const routes = [
+      `/api-daily/kiem-dinh/create`,
+      `/api/kiem-dinh/create`
+    ];
+    
+    let lastError: any = null;
+    for (const route of routes) {
+      try {
+        const response = await apiClient.post(route, kiemDinhData);
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (status !== 404) {
+          throw error;
+        }
+      }
+    }
+    throw lastError;
+  },
 };

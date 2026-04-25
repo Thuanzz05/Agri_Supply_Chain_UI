@@ -102,6 +102,7 @@ const DonHangMuaVao: React.FC = () => {
   // Danh sách nông dân và lô hàng
   const [farmers, setFarmers] = React.useState<NongDan[]>([]);
   const [batches, setBatches] = React.useState<LoNongSan[]>([]);
+  const [allBatches, setAllBatches] = React.useState<LoNongSan[]>([]); // Lưu tất cả lô để filter
   const [loadingFarmers, setLoadingFarmers] = React.useState(false);
   const [loadingBatches, setLoadingBatches] = React.useState(false);
 
@@ -151,23 +152,81 @@ const DonHangMuaVao: React.FC = () => {
     setLoadingBatches(true);
     
     try {
+      const userStr = localStorage.getItem('user');
+      const user = userStr ? JSON.parse(userStr) : null;
+      const maDaiLy = user?.maTaiKhoan;
+
       const [farmersResponse, batchesResponse] = await Promise.all([
         apiService.getAllFarmers(),
-        apiService.getAllBatches(),
+        // Lấy danh sách lô hàng có sẵn để kiểm định
+        maDaiLy ? apiService.getLoHangKiemDinhByDaiLy(maDaiLy) : Promise.resolve({ data: [] }),
       ]);
 
       if (farmersResponse?.data) {
         setFarmers(Array.isArray(farmersResponse.data) ? farmersResponse.data : []);
       }
 
-      if (batchesResponse?.data) {
-        setBatches(Array.isArray(batchesResponse.data) ? batchesResponse.data : []);
+      // Backend trả về { success, message, data, count }
+      // apiService đã return response.data nên batchesResponse = { success, message, data, count }
+      const batchesData = batchesResponse?.data || batchesResponse;
+      
+      if (batchesData) {
+        // Lấy tất cả lô (bao gồm cả chưa kiểm định và đã kiểm định)
+        const fetchedBatches = Array.isArray(batchesData) 
+          ? batchesData
+          : [];
+        
+        // Map sang format LoNongSan và thêm thông tin kiểm định
+        const mappedBatches = fetchedBatches.map((batch: any) => ({
+          maLo: batch.maLo,
+          maTrangTrai: 0, // Không cần thiết cho form tạo đơn
+          maSanPham: 0, // Không cần thiết cho form tạo đơn
+          soLuongBanDau: batch.soLuong,
+          soLuongHienTai: batch.soLuong,
+          ngayThuHoach: batch.ngayThuHoach,
+          hanSuDung: '', // Không cần thiết cho form tạo đơn
+          maQR: '', // Không cần thiết cho form tạo đơn
+          trangThai: 'san_sang',
+          ngayTao: '', // Không cần thiết cho form tạo đơn
+          tenTrangTrai: '', // Không cần thiết cho form tạo đơn
+          tenSanPham: batch.tenSanPham,
+          donViTinh: batch.donViTinh,
+          // Thêm các field cho kiểm định
+          maNongDan: batch.maNongDan,
+          tenNongDan: batch.tenNongDan,
+          soLuong: batch.soLuong,
+          trangThaiKiemDinh: batch.trangThaiKiemDinh,
+          ketQuaKiemDinh: batch.ketQuaKiemDinh,
+        }));
+        
+        setAllBatches(mappedBatches); // Lưu tất cả lô
+        setBatches(mappedBatches); // Hiển thị tất cả lô ban đầu
       }
     } catch (error: any) {
       message.error(getApiErrorMessage(error, 'Không thể tải danh sách'));
     } finally {
       setLoadingFarmers(false);
       setLoadingBatches(false);
+    }
+  };
+
+  // Filter lô theo nông dân được chọn
+  const handleFarmerChange = (maNongDan: string) => {
+    // Reset form: đổi nông dân thì xóa hết lô đã chọn
+    setCreateForm({ 
+      maNongDan,
+      chiTietDonHang: [{ maLo: '', soLuong: '', donGia: '' }]
+    });
+    
+    if (maNongDan) {
+      // Filter lô theo mã nông dân
+      const filteredBatches = allBatches.filter(
+        (batch: any) => batch.maNongDan?.toString() === maNongDan
+      );
+      setBatches(filteredBatches);
+    } else {
+      // Nếu không chọn nông dân, hiển thị tất cả
+      setBatches(allBatches);
     }
   };
 
@@ -249,6 +308,26 @@ const DonHangMuaVao: React.FC = () => {
   const handleProductChange = (index: number, field: string, value: string) => {
     const newChiTiet = [...createForm.chiTietDonHang];
     newChiTiet[index] = { ...newChiTiet[index], [field]: value };
+    
+    // Nếu đang chọn lô và chưa có nông dân được chọn
+    if (field === 'maLo' && value && !createForm.maNongDan) {
+      // Tìm lô được chọn để lấy mã nông dân
+      const selectedBatch = allBatches.find((batch: any) => batch.maLo?.toString() === value);
+      if (selectedBatch && selectedBatch.maNongDan) {
+        // Tự động chọn nông dân và filter lô
+        const maNongDan = selectedBatch.maNongDan.toString();
+        const filteredBatches = allBatches.filter(
+          (batch: any) => batch.maNongDan?.toString() === maNongDan
+        );
+        setBatches(filteredBatches);
+        setCreateForm({ 
+          maNongDan,
+          chiTietDonHang: newChiTiet 
+        });
+        return;
+      }
+    }
+    
     setCreateForm({ ...createForm, chiTietDonHang: newChiTiet });
   };
 
@@ -645,7 +724,7 @@ const DonHangMuaVao: React.FC = () => {
             placeholder="Tìm và chọn nông dân"
             style={{ width: '100%' }}
             value={createForm.maNongDan || undefined}
-            onChange={(value) => setCreateForm({ ...createForm, maNongDan: value })}
+            onChange={handleFarmerChange}
             loading={loadingFarmers}
             filterOption={(input, option) =>
               (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
@@ -684,12 +763,21 @@ const DonHangMuaVao: React.FC = () => {
                   filterOption={(input, option) =>
                     (option?.label ?? '').toLowerCase().includes(input.toLowerCase())
                   }
-                  options={batches.map((batch) => ({
-                    value: batch.maLo?.toString(),
-                    label: `Lô ${batch.maLo} - ${batch.tenSanPham || 'Chưa có tên'} (${
-                      batch.soLuongHienTai || 0
-                    } ${batch.donViTinh || 'kg'})`,
-                  }))}
+                  options={batches.map((batch: any) => {
+                    const kiemDinhStatus = batch.trangThaiKiemDinh === 'dat' 
+                      ? '✓ Đạt' 
+                      : batch.trangThaiKiemDinh === 'khong_dat'
+                      ? '✗ Không đạt'
+                      : '⚠ Chưa kiểm định';
+                    
+                    return {
+                      value: batch.maLo?.toString(),
+                      label: `Lô ${batch.maLo} - ${batch.tenSanPham || 'Chưa có tên'} (${
+                        batch.soLuongHienTai || 0
+                      } ${batch.donViTinh || 'kg'}) - ${kiemDinhStatus}`,
+                      disabled: batch.trangThaiKiemDinh === 'khong_dat', // Không cho chọn lô không đạt
+                    };
+                  })}
                 />
               </div>
               <input

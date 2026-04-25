@@ -13,6 +13,12 @@ export interface LoNongSan {
   tenTrangTrai: string;
   tenSanPham: string;
   donViTinh: string;
+  // Thêm các field cho kiểm định
+  maNongDan?: number;
+  tenNongDan?: string;
+  soLuong?: number;
+  trangThaiKiemDinh?: 'cho_kiem_dinh' | 'dat' | 'khong_dat';
+  ketQuaKiemDinh?: string;
 }
 
 // Type cho form data khi thêm lô nông sản
