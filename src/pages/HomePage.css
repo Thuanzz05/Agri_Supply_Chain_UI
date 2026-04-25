@@ -50,6 +50,7 @@ body {
 .btns {
   display: flex;
   gap: 16px;
+  align-items: center;
 }
 
 .visual {

@@ -20,6 +20,7 @@ import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
 import type { DuLieuCapNhatTonKho, TonKhoDaiLy } from '../../types/kho';
+import { ModalButton } from '../../components/ModalButton';
 
 interface TonKhoTableItem extends TonKhoDaiLy {
   key: string;
@@ -365,10 +366,10 @@ const TonKhoDaiLyPage: React.FC = () => {
           </Form.Item>
 
           <div style={{ display: 'flex', justifyContent: 'flex-end', gap: 12 }}>
-            <Button size="small" onClick={handleCloseModal}>Hủy</Button>
-            <Button size="small" type="primary" htmlType="submit" loading={submitting}>
+            <ModalButton onClick={handleCloseModal}>Hủy</ModalButton>
+            <ModalButton type="primary" htmlType="submit" loading={submitting}>
               Xác nhận điều chỉnh
-            </Button>
+            </ModalButton>
           </div>
         </Form>
       </Modal>

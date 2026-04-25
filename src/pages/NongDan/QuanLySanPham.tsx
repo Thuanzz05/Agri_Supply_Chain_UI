@@ -1,5 +1,5 @@
 import React from 'react';
-import { Card, Table, Button, Space, Input, message, Modal, Form } from 'antd';
+import { Card, Table, Space, Input, message, Modal, Form } from 'antd';
 import type { TableProps } from 'antd';
 import { 
   PlusOutlined, 
@@ -11,6 +11,8 @@ import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
 import type { DuLieuFormSanPham } from '../../types/sanPham';
+import { ModalButton } from '../../components/ModalButton';
+import { ActionButton } from '../../components/ActionButton';
 
 interface DataType {
   key: string;
@@ -204,28 +206,20 @@ const QuanLySanPham: React.FC = () => {
       width: 150,
       render: (_, record) => (
         <Space size="small">
-          <Button 
+          <ActionButton 
             type="default" 
-            size="small" 
             icon={<EditOutlined />}
-            style={{ 
-              color: '#1890ff', 
-              borderColor: '#1890ff',
-              minWidth: '65px'
-            }}
             onClick={() => showEditModal(record)}
           >
             Sửa
-          </Button>
-          <Button 
-            danger 
-            size="small" 
+          </ActionButton>
+          <ActionButton 
+            type="danger" 
             icon={<DeleteOutlined />}
-            style={{ minWidth: '65px' }}
             onClick={() => handleDelete(record)}
           >
             Xóa
-          </Button>
+          </ActionButton>
         </Space>
       ),
     },
@@ -255,14 +249,13 @@ const QuanLySanPham: React.FC = () => {
             onChange={(e) => setSearchText(e.target.value)}
             allowClear
           />
-          <Button 
+          <ActionButton 
             type="primary" 
             icon={<PlusOutlined />}
-            size="large"
             onClick={showModal}
           >
             Thêm sản phẩm
-          </Button>
+          </ActionButton>
         </div>
         
         <Table<DataType>
@@ -337,22 +330,16 @@ const QuanLySanPham: React.FC = () => {
 
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
-              <Button onClick={handleCancel} size="middle">
+              <ModalButton onClick={handleCancel}>
                 Hủy
-              </Button>
-              <Button 
+              </ModalButton>
+              <ModalButton 
                 type="primary" 
                 htmlType="submit" 
-                loading={loading} 
-                size="middle"
-                style={{ 
-                  fontSize: '14px',
-                  height: '32px',
-                  padding: '0 15px'
-                }}
+                loading={loading}
               >
                 {isEditMode ? 'Cập nhật' : 'Thêm sản phẩm'}
-              </Button>
+              </ModalButton>
             </Space>
           </Form.Item>
         </Form>

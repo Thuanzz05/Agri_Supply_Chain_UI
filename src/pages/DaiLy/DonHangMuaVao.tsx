@@ -31,6 +31,8 @@ import { apiService } from '../../services/apiService';
 import type { ChiTietDonHang, DonHang } from '../../types/donHang';
 import type { NongDan } from '../../types/nongDan';
 import type { LoNongSan } from '../../types/loNongSan';
+import { ModalButton } from '../../components/ModalButton';
+import { ActionButton } from '../../components/ActionButton';
 import dayjs from 'dayjs';
 
 interface DonHangTableItem extends DonHang {
@@ -380,15 +382,13 @@ const DonHangMuaVao: React.FC = () => {
       width: 120,
       fixed: 'right',
       render: (_, record) => (
-        <Button
+        <ActionButton
           type="primary"
-          size="small"
           icon={<EyeOutlined />}
           onClick={() => showDetailModal(record)}
-          style={{ fontSize: '14px', height: '32px', padding: '0 15px' }}
         >
           Chi tiết
-        </Button>
+        </ActionButton>
       ),
     },
   ];
@@ -499,24 +499,20 @@ const DonHangMuaVao: React.FC = () => {
             ]}
           />
           <div style={{ display: 'flex', gap: 8 }}>
-            <Button 
-              size="small" 
+            <ActionButton 
               icon={<ReloadOutlined />} 
               onClick={fetchOrders} 
               loading={loading}
-              style={{ fontSize: '14px', height: '32px', padding: '0 15px' }}
             >
               Làm mới
-            </Button>
-            <Button 
-              size="small" 
+            </ActionButton>
+            <ActionButton 
               type="primary" 
               icon={<PlusOutlined />} 
               onClick={showCreateModal}
-              style={{ fontSize: '14px', height: '32px', padding: '0 15px' }}
             >
               Tạo đơn hàng
-            </Button>
+            </ActionButton>
           </div>
         </div>
 
@@ -548,38 +544,28 @@ const DonHangMuaVao: React.FC = () => {
         footer={
           selectedOrder?.trangThai === 'cho_xac_nhan' ? (
             <Space>
-              <Button 
-                onClick={handleCloseDetailModal}
-                style={{ fontSize: '14px', height: '32px', padding: '0 15px' }}
-              >
+              <ModalButton onClick={handleCloseDetailModal}>
                 Đóng
-              </Button>
-              <Button
-                danger
-                size="small"
+              </ModalButton>
+              <ModalButton
+                type="danger"
                 icon={<CloseCircleOutlined />}
                 onClick={() => handleUpdateStatus(selectedOrder.maDonHang, 'da_huy')}
-                style={{ fontSize: '14px', height: '32px', padding: '0 15px' }}
               >
                 Từ chối
-              </Button>
-              <Button
+              </ModalButton>
+              <ModalButton
                 type="primary"
-                size="small"
                 icon={<CheckCircleOutlined />}
                 onClick={() => handleUpdateStatus(selectedOrder.maDonHang, 'hoan_thanh')}
-                style={{ fontSize: '14px', height: '32px', padding: '0 15px' }}
               >
                 Xác nhận
-              </Button>
+              </ModalButton>
             </Space>
           ) : (
-            <Button 
-              onClick={handleCloseDetailModal}
-              style={{ fontSize: '14px', height: '32px', padding: '0 15px' }}
-            >
+            <ModalButton onClick={handleCloseDetailModal}>
               Đóng
-            </Button>
+            </ModalButton>
           )
         }
       >
@@ -634,11 +620,21 @@ const DonHangMuaVao: React.FC = () => {
         title="Tạo đơn hàng mua từ nông dân"
         open={isCreateModalOpen}
         onCancel={handleCloseCreateModal}
-        onOk={handleCreateOrder}
-        confirmLoading={createLoading}
         width={700}
-        okText="Tạo đơn hàng"
-        cancelText="Hủy"
+        footer={
+          <Space>
+            <ModalButton onClick={handleCloseCreateModal}>
+              Hủy
+            </ModalButton>
+            <ModalButton
+              type="primary"
+              onClick={handleCreateOrder}
+              loading={createLoading}
+            >
+              Tạo đơn hàng
+            </ModalButton>
+          </Space>
+        }
       >
         <div style={{ marginBottom: 16 }}>
           <label style={{ display: 'block', marginBottom: 8 }}>

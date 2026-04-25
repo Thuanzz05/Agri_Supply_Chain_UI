@@ -1,6 +1,5 @@
 import React from 'react';
 import {
-  Button,
   Card,
   Col,
   Descriptions,
@@ -24,6 +23,8 @@ import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
 import type { ChiTietDonHang, DonHang } from '../../types/donHang';
+import { ModalButton } from '../../components/ModalButton';
+import { ActionButton } from '../../components/ActionButton';
 import dayjs from 'dayjs';
 
 interface DonHangTableItem extends DonHang {
@@ -220,14 +221,13 @@ const DonHangBanRa: React.FC = () => {
       width: 120,
       fixed: 'right',
       render: (_, record) => (
-        <Button
+        <ActionButton
           type="primary"
-          size="small"
           icon={<EyeOutlined />}
           onClick={() => showDetailModal(record)}
         >
           Chi tiết
-        </Button>
+        </ActionButton>
       ),
     },
   ];
@@ -337,9 +337,9 @@ const DonHangBanRa: React.FC = () => {
               { label: 'Đã hủy', value: 'da_huy' },
             ]}
           />
-          <Button type="primary" icon={<PlusOutlined />}>
+          <ActionButton type="primary" icon={<PlusOutlined />}>
             Tạo đơn hàng
-          </Button>
+          </ActionButton>
         </div>
 
         <Table<DonHangTableItem>
@@ -367,7 +367,7 @@ const DonHangBanRa: React.FC = () => {
         open={isDetailModalOpen}
         onCancel={handleCloseDetailModal}
         width={900}
-        footer={<Button onClick={handleCloseDetailModal}>Đóng</Button>}
+        footer={<ModalButton onClick={handleCloseDetailModal}>Đóng</ModalButton>}
       >
         {detailLoading ? (
           <div style={{ textAlign: 'center', padding: '40px 0' }}>Đang tải...</div>

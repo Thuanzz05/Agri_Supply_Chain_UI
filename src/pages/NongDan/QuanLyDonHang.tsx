@@ -1,7 +1,6 @@
 import React from 'react';
 import {
   Alert,
-  Button,
   Card,
   Col,
   Descriptions,
@@ -28,6 +27,8 @@ import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
 import type { ChiTietDonHang, DonHang } from '../../types/donHang';
+import { ModalButton } from '../../components/ModalButton';
+import { ActionButton } from '../../components/ActionButton';
 import dayjs from 'dayjs';
 
 interface DonHangTableItem extends DonHang {
@@ -258,14 +259,13 @@ const QuanLyDonHangNongDan: React.FC = () => {
       width: 120,
       fixed: 'right',
       render: (_, record) => (
-        <Button
+        <ActionButton
           type="primary"
-          size="small"
           icon={<EyeOutlined />}
           onClick={() => showDetailModal(record)}
         >
           Chi tiết
-        </Button>
+        </ActionButton>
       ),
     },
   ];
@@ -377,9 +377,9 @@ const QuanLyDonHangNongDan: React.FC = () => {
               { label: 'Đã hủy', value: 'da_huy' },
             ]}
           />
-          <Button icon={<ReloadOutlined />} onClick={fetchOrders} loading={loading}>
+          <ActionButton icon={<ReloadOutlined />} onClick={fetchOrders} loading={loading}>
             Làm mới
-          </Button>
+          </ActionButton>
         </div>
 
         <Table<DonHangTableItem>
@@ -411,26 +411,24 @@ const QuanLyDonHangNongDan: React.FC = () => {
         footer={
           selectedOrder?.trangThai === 'cho_xac_nhan' ? (
             <Space>
-              <Button onClick={handleCloseDetailModal}>Đóng</Button>
-              <Button
-                danger
-                size="small"
+              <ModalButton onClick={handleCloseDetailModal}>Đóng</ModalButton>
+              <ModalButton
+                type="danger"
                 icon={<CloseCircleOutlined />}
                 onClick={() => handleUpdateStatus(selectedOrder.maDonHang, 'da_huy')}
               >
                 Từ chối
-              </Button>
-              <Button
+              </ModalButton>
+              <ModalButton
                 type="primary"
-                size="small"
                 icon={<CheckCircleOutlined />}
                 onClick={() => handleUpdateStatus(selectedOrder.maDonHang, 'hoan_thanh')}
               >
                 Xác nhận
-              </Button>
+              </ModalButton>
             </Space>
           ) : (
-            <Button onClick={handleCloseDetailModal}>Đóng</Button>
+            <ModalButton onClick={handleCloseDetailModal}>Đóng</ModalButton>
           )
         }
       >

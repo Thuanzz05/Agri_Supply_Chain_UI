@@ -1,11 +1,13 @@
 import React from 'react';
-import { Card, Table, Button, message, Modal, Form, Input, Space } from 'antd';
+import { Card, Table, message, Modal, Form, Input, Space } from 'antd';
 import type { TableProps } from 'antd';
 import { PlusOutlined, EditOutlined, DeleteOutlined, SearchOutlined } from '@ant-design/icons';
 import { AdminLayout } from '../../components/Layout';
 import { CustomPagination } from '../../components/CustomPagination';
 import { apiService } from '../../services/apiService';
 import type { DuLieuFormTrangTrai } from '../../types/trangTrai';
+import { ModalButton } from '../../components/ModalButton';
+import { ActionButton } from '../../components/ActionButton';
 
 // Định nghĩa kiểu dữ liệu cho bảng
 interface DataType {
@@ -34,11 +36,28 @@ const QuanLyTrangTrai: React.FC = () => {
   const [editingFarm, setEditingFarm] = React.useState<DataType | null>(null);
   const [form] = Form.useForm();
 
-  // Function gọi API lấy danh sách trang trại
+  // Function gọi API lấy danh sách trang trại của nông dân đang đăng nhập
   const fetchFarms = async () => {
     setLoading(true);
     try {
-      const response = await apiService.getAllFarms();
+      const userStr = localStorage.getItem('user');
+      if (!userStr) {
+        message.error('Vui lòng đăng nhập lại');
+        setData([]);
+        return;
+      }
+
+      const user = JSON.parse(userStr);
+      const maNongDan = user.maNongDan || (user as any).MaNongDan;
+      
+      if (!maNongDan) {
+        message.warning('Không tìm thấy thông tin nông dân');
+        setData([]);
+        return;
+      }
+
+      // Gọi API lấy trang trại theo nông dân
+      const response = await apiService.getFarmsByFarmer(maNongDan.toString());
       
       if (response && response.data) {
         const farms = Array.isArray(response.data) ? response.data : [];
@@ -110,6 +129,12 @@ const QuanLyTrangTrai: React.FC = () => {
       }
       
       const user = JSON.parse(userStr);
+      const maNongDan = user.maNongDan || (user as any).MaNongDan;
+      
+      if (!maNongDan) {
+        message.error('Không tìm thấy thông tin nông dân');
+        return;
+      }
       
       if (isEditMode && editingFarm) {
         // Sửa trang trại
@@ -123,7 +148,7 @@ const QuanLyTrangTrai: React.FC = () => {
         // Thêm trang trại mới
         const farmData = {
           ...values,
-          maNongDan: user.maTaiKhoan
+          maNongDan: maNongDan
         };
         await apiService.addFarm(farmData);
         message.success('Thêm trang trại thành công!');
@@ -201,13 +226,13 @@ const QuanLyTrangTrai: React.FC = () => {
       title: 'Tên trang trại',
       dataIndex: 'tenTrangTrai',
       key: 'tenTrangTrai',
-      width: 200,
+      width: 250,
     },
     {
       title: 'Địa chỉ',
       dataIndex: 'diaChi',
       key: 'diaChi',
-      width: 250,
+      width: 300,
     },
     {
       title: 'Số chứng nhận',
@@ -216,39 +241,25 @@ const QuanLyTrangTrai: React.FC = () => {
       width: 150,
     },
     {
-      title: 'Nông dân',
-      dataIndex: 'tenNongDan',
-      key: 'tenNongDan',
-      width: 150,
-    },
-    {
       title: 'Thao tác',
       key: 'action',
       width: 150,
       render: (_, record) => (
         <Space size="small">
-          <Button 
+          <ActionButton 
             type="default" 
-            size="small" 
             icon={<EditOutlined />}
-            style={{ 
-              color: '#1890ff', 
-              borderColor: '#1890ff',
-              minWidth: '65px'
-            }}
             onClick={() => showEditModal(record)}
           >
             Sửa
-          </Button>
-          <Button 
-            danger 
-            size="small" 
+          </ActionButton>
+          <ActionButton 
+            type="danger" 
             icon={<DeleteOutlined />}
-            style={{ minWidth: '65px' }}
             onClick={() => handleDelete(record)}
           >
             Xóa
-          </Button>
+          </ActionButton>
         </Space>
       ),
     },
@@ -278,14 +289,13 @@ const QuanLyTrangTrai: React.FC = () => {
             onChange={(e) => setSearchText(e.target.value)}
             allowClear
           />
-          <Button 
+          <ActionButton 
             type="primary" 
             icon={<PlusOutlined />}
             onClick={showModal}
-            style={{ height: '32px', fontSize: '14px' }}
           >
             Thêm trang trại
-          </Button>
+          </ActionButton>
         </div>
         
         <Table<DataType>
@@ -357,20 +367,16 @@ const QuanLyTrangTrai: React.FC = () => {
 
           <Form.Item style={{ marginBottom: 0, textAlign: 'right' }}>
             <Space>
-              <Button 
-                onClick={handleCancel}
-                style={{ height: '32px', padding: '4px 15px' }}
-              >
+              <ModalButton onClick={handleCancel}>
                 Hủy
-              </Button>
-              <Button 
-                type="primary" 
-                htmlType="submit" 
+              </ModalButton>
+              <ModalButton
+                type="primary"
+                htmlType="submit"
                 loading={loading}
-                style={{ height: '32px', padding: '4px 15px' }}
               >
                 {isEditMode ? 'Cập nhật' : 'Thêm trang trại'}
-              </Button>
+              </ModalButton>
             </Space>
           </Form.Item>
         </Form>
