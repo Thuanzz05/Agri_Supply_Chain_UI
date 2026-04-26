@@ -389,6 +389,29 @@ export const apiService = {
     }
   },
 
+  // Lấy đơn hàng của siêu thị (mua từ đại lý)
+  async getSupermarketOrders(maSieuThi: number) {
+    const routes = [
+      `/api-daily/don-hang-sieu-thi/get-by-sieu-thi/${maSieuThi}`,
+      `/api/don-hang-sieu-thi/get-by-sieu-thi/${maSieuThi}`
+    ];
+    
+    let lastError: any = null;
+    for (const route of routes) {
+      try {
+        const response = await apiClient.get(route);
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (status !== 404) {
+          throw error;
+        }
+      }
+    }
+    throw lastError;
+  },
+
   // ==================== API Đơn hàng Nông dân ====================
   
   // Lấy đơn hàng theo nông dân
