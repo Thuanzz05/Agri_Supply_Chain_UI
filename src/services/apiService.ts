@@ -335,6 +335,16 @@ export const apiService = {
     }
   },
 
+  // Cập nhật thông tin nông dân
+  async updateFarmerInfo(id: number, farmerData: any) {
+    try {
+      const response = await apiClient.put(`/api-nongdan/nong-dan/update/${id}`, farmerData);
+      return response.data;
+    } catch (error) {
+      throw error;
+    }
+  },
+
   // ==================== API Đơn hàng Nông dân ====================
   
   // Lấy đơn hàng theo nông dân

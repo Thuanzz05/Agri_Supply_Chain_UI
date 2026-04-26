@@ -97,6 +97,11 @@ const Sidebar: React.FC = () => {
       label: 'Đơn hàng' 
     },
     { 
+      key: '/farmer/profile', 
+      icon: <UserOutlined />, 
+      label: 'Thông tin cá nhân' 
+    },
+    { 
       type: 'divider'
     },
     { 
