@@ -62,7 +62,7 @@ const KiemDinhChatLuong: React.FC = () => {
     try {
       setLoading(true);
       const user = authService.getStoredUser();
-      const maDaiLy = user?.maTaiKhoan;
+      const maDaiLy = user?.maDaiLy || (user as any)?.MaDaiLy;
       
       if (!maDaiLy) {
         message.error('Không tìm thấy thông tin đại lý');

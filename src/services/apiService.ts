@@ -571,11 +571,34 @@ export const apiService = {
 
   // ==================== API Kiểm định chất lượng ====================
   
-  // Lấy danh sách lô hàng cần kiểm định theo đại lý
+  // Lấy danh sách lô hàng cần kiểm định theo đại lý (chỉ lô trong đơn hàng)
   async getLoHangKiemDinhByDaiLy(maDaiLy: number) {
     const routes = [
       `/api-daily/kiem-dinh/get-lo-hang-by-dai-ly/${maDaiLy}`,
       `/api/kiem-dinh/get-lo-hang-by-dai-ly/${maDaiLy}`
+    ];
+    
+    let lastError: any = null;
+    for (const route of routes) {
+      try {
+        const response = await apiClient.get(route);
+        return response.data;
+      } catch (error: any) {
+        lastError = error;
+        const status = error?.response?.status;
+        if (status !== 404) {
+          throw error;
+        }
+      }
+    }
+    throw lastError;
+  },
+
+  // Lấy tất cả lô hàng available (để tạo đơn hàng)
+  async getAllLoHangAvailable() {
+    const routes = [
+      `/api-daily/kiem-dinh/get-all-lo-hang-available`,
+      `/api/kiem-dinh/get-all-lo-hang-available`
     ];
     
     let lastError: any = null;

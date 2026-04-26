@@ -158,8 +158,8 @@ const DonHangMuaVao: React.FC = () => {
 
       const [farmersResponse, batchesResponse] = await Promise.all([
         apiService.getAllFarmers(),
-        // Lấy danh sách lô hàng có sẵn để kiểm định
-        maDaiLy ? apiService.getLoHangKiemDinhByDaiLy(maDaiLy) : Promise.resolve({ data: [] }),
+        // Lấy tất cả lô hàng available để tạo đơn hàng
+        apiService.getAllLoHangAvailable(),
       ]);
 
       if (farmersResponse?.data) {
@@ -184,7 +184,7 @@ const DonHangMuaVao: React.FC = () => {
           soLuongBanDau: batch.soLuong,
           soLuongHienTai: batch.soLuong,
           ngayThuHoach: batch.ngayThuHoach,
-          hanSuDung: '', // Không cần thiết cho form tạo đơn
+          hanSuDung: batch.hanSuDung || '', // Thêm HSD
           maQR: '', // Không cần thiết cho form tạo đơn
           trangThai: 'san_sang',
           ngayTao: '', // Không cần thiết cho form tạo đơn
@@ -770,11 +770,30 @@ const DonHangMuaVao: React.FC = () => {
                       ? '✗ Không đạt'
                       : '⚠ Chưa kiểm định';
                     
+                    // Tính số ngày còn lại đến HSD
+                    let hsdInfo = '';
+                    if (batch.hanSuDung) {
+                      const hsd = new Date(batch.hanSuDung);
+                      const today = new Date();
+                      const daysLeft = Math.ceil((hsd.getTime() - today.getTime()) / (1000 * 60 * 60 * 24));
+                      
+                      if (daysLeft < 0) {
+                        hsdInfo = ' - ⚠ Hết hạn';
+                      } else if (daysLeft <= 7) {
+                        hsdInfo = ` - ⚠ Còn ${daysLeft} ngày`;
+                      } else if (daysLeft <= 14) {
+                        hsdInfo = ` - Còn ${daysLeft} ngày`;
+                      } else if (daysLeft <= 30) {
+                        hsdInfo = ` - HSD: ${daysLeft} ngày`;
+                      }
+                      // Nếu > 30 ngày thì không hiển thị (còn lâu)
+                    }
+                    
                     return {
                       value: batch.maLo?.toString(),
                       label: `Lô ${batch.maLo} - ${batch.tenSanPham || 'Chưa có tên'} (${
                         batch.soLuongHienTai || 0
-                      } ${batch.donViTinh || 'kg'}) - ${kiemDinhStatus}`,
+                      } ${batch.donViTinh || 'kg'})${hsdInfo} - ${kiemDinhStatus}`,
                       disabled: batch.trangThaiKiemDinh === 'khong_dat', // Không cho chọn lô không đạt
                     };
                   })}
